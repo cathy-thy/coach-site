@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome — Jordan Vale Training</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/pixel.js"></script>
+</head>
+<body data-base="../">
+<header id="site-header"></header>
+
+<main>
+  <div class="confirm" id="confirm"></div>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="../assets/site.js"></script>
+<script>
+  var sub = null;
+  try { sub = JSON.parse(localStorage.getItem('cs_last_subscription') || 'null'); } catch (e) {}
+  var el = document.getElementById('confirm');
+
+  if (!sub) {
+    el.innerHTML = '<h1>No membership yet</h1><p class="muted">Pick a plan to get started.</p><p><a class="btn" href="../subscribe/">See plans</a></p>';
+  } else {
+    el.innerHTML =
+      '<div class="check">✓</div>' +
+      '<h1>Welcome aboard, <span id="b-name"></span>!</h1>' +
+      '<p class="muted">Membership <strong id="b-number"></strong> · <span id="b-program"></span> · ' + money(sub.total) + '/' + (sub.billing === 'annual' ? 'year' : 'month') + '</p>' +
+      '<p>A receipt and your onboarding questionnaire are on their way to <span id="b-email"></span>. I\'ll reach out within one business day to schedule your assessment.</p>' +
+      '<p><a class="btn ghost" href="../">Back to home</a></p>';
+    document.getElementById('b-name').textContent = sub.firstName;
+    document.getElementById('b-number').textContent = sub.number;
+    document.getElementById('b-program').textContent = sub.plan;
+    document.getElementById('b-email').textContent = sub.email;
+  }
+</script>
+</body>
+</html>

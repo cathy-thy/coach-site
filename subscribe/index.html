@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Membership — Jordan Vale Training</title>
+  <meta name="description" content="Monthly and annual training memberships: app, online coaching, small group and 1:1.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/pixel.js"></script>
+</head>
+<body data-base="../">
+<header id="site-header"></header>
+
+<main class="container">
+  <div class="sub-head">
+    <div>
+      <p class="eyebrow" style="margin-top:40px">Membership</p>
+      <h1 class="page-title" style="margin-top:0">Pick your plan</h1>
+    </div>
+    <div class="billing" role="group" aria-label="Billing period">
+      <button type="button" id="billing-monthly" data-billing="monthly" aria-pressed="true">Monthly</button>
+      <button type="button" id="billing-annual" data-billing="annual" aria-pressed="false">Annual <small>2 months free</small></button>
+    </div>
+  </div>
+
+  <div class="plans" id="plans"></div>
+
+  <form class="two-col" id="subscribe-form" style="margin-top:24px">
+    <div>
+      <div class="panel"><h3>Your details</h3><div class="fields">
+        <div><label for="s-first">First name</label><input id="s-first" required autocomplete="given-name"></div>
+        <div><label for="s-last">Last name</label><input id="s-last" required autocomplete="family-name"></div>
+        <div><label for="s-email">Email</label><input id="s-email" type="email" required autocomplete="email"></div>
+        <div><label for="s-phone">Phone</label><input id="s-phone" type="tel" required autocomplete="tel"></div>
+        <div class="full"><label for="s-goal">Main goal</label>
+          <select id="s-goal"><option>Build strength</option><option>Lose fat</option><option>Move without pain</option><option>Sport performance</option></select>
+        </div>
+      </div></div>
+      <div class="panel"><h3>Payment</h3><p class="muted" style="margin:0">Demo only — no card is collected or charged.</p>
+        <label class="pay-option"><input type="radio" name="pay" value="card" id="pay-card"> Credit / debit card</label>
+        <label class="pay-option"><input type="radio" name="pay" value="paypal" id="pay-paypal"> PayPal</label>
+        <label class="pay-option"><input type="radio" name="pay" value="apple_pay" id="pay-apple"> Apple Pay</label>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Summary</h3>
+      <div class="sum-row"><span id="sum-plan">Choose a plan above</span><span id="sum-price">—</span></div>
+      <div class="sum-row muted"><span>Billing</span><span id="sum-billing">Monthly</span></div>
+      <div class="sum-row muted"><span>First charge</span><span>Today</span></div>
+      <div class="sum-row total"><span>Due today</span><span id="sum-total">—</span></div>
+      <button class="btn block" type="submit" id="start-subscription" style="margin-top:16px">Start membership</button>
+      <p class="muted" style="font-size:13px;margin:10px 0 0">Cancel anytime. Renews automatically until cancelled.</p>
+      <p class="muted" id="sub-error" style="font-size:14px;margin:10px 0 0;color:#ff8a80" hidden></p>
+    </div>
+  </form>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="../assets/site.js"></script>
+<script>
+  var billing = 'monthly';
+  var selected = findProgram(new URLSearchParams(location.search).get('plan')) || null;
+
+  function renderPlans() {
+    document.getElementById('plans').innerHTML = PROGRAMS.map(function (p) {
+      var price = planPrice(p, billing);
+      return '<button type="button" class="plan" id="plan-' + p.id + '" data-id="' + p.id + '" aria-pressed="' + (selected === p) + '">' +
+        '<span class="tag">' + p.tag + '</span>' +
+        '<h3>' + p.name + '</h3>' +
+        '<div class="price">' + money(price) + '<small>/' + (billing === 'annual' ? 'year' : 'month') + '</small></div>' +
+        '<ul>' + p.includes.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>' +
+        '</button>';
+    }).join('');
+  }
+
+  function renderSummary() {
+    document.getElementById('sum-billing').textContent = billing === 'annual' ? 'Annual' : 'Monthly';
+    if (!selected) return;
+    var price = money(planPrice(selected, billing));
+    document.getElementById('sum-plan').textContent = selected.name;
+    document.getElementById('sum-price').textContent = price;
+    document.getElementById('sum-total').textContent = price;
+  }
+
+  renderPlans();
+  renderSummary();
+  track('ViewContent', selected ? pixelContents(selected, billing) : { content_type: 'product', content_name: 'membership' });
+
+  document.getElementById('plans').addEventListener('click', function (e) {
+    var b = e.target.closest('.plan');
+    if (!b) return;
+    selected = findProgram(b.dataset.id);
+    renderPlans();
+    renderSummary();
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.billing button'), function (b) {
+    b.addEventListener('click', function () {
+      billing = b.dataset.billing;
+      Array.prototype.forEach.call(document.querySelectorAll('.billing button'), function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      renderPlans();
+      renderSummary();
+    });
+  });
+
+  document.getElementById('subscribe-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var err = document.getElementById('sub-error');
+    var pay = document.querySelector('input[name="pay"]:checked');
+    if (!selected || !pay) {
+      err.textContent = !selected ? 'Choose a plan above.' : 'Choose a payment method.';
+      err.hidden = false;
+      if (!selected) document.getElementById('plans').scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    var email = document.getElementById('s-email').value;
+    await identifyUser({ email: email, phone: document.getElementById('s-phone').value });
+    var price = planPrice(selected, billing);
+    track('Subscribe', pixelContents(selected, billing));
+
+    var sub = {
+      number: 'JV-' + Math.floor(100000 + Math.random() * 900000),
+      plan: selected.name, billing: billing, email: email, total: price,
+      firstName: document.getElementById('s-first').value
+    };
+    try { localStorage.setItem('cs_last_subscription', JSON.stringify(sub)); } catch (e2) {}
+    location.href = '../thank-you/';
+  });
+</script>
+</body>
+</html>

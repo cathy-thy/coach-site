@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Program — Jordan Vale Training</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script src="../assets/pixel.js"></script>
+</head>
+<body data-base="../">
+<header id="site-header"></header>
+
+<main>
+  <div class="container pdp" id="pdp"></div>
+</main>
+
+<footer id="site-footer"></footer>
+
+<script src="../assets/site.js"></script>
+<script>
+  var p = findProgram(new URLSearchParams(location.search).get('id'));
+  var el = document.getElementById('pdp');
+
+  if (!p) {
+    el.innerHTML = '<div><h1>Program not found</h1><p><a class="btn" href="../#programs">See all programs</a></p></div>';
+  } else {
+    document.title = p.name + ' — Jordan Vale Training';
+    el.innerHTML =
+      '<div>' +
+      '  <p class="eyebrow">' + p.tag + '</p>' +
+      '  <h1>' + p.name + '</h1>' +
+      '  <p class="lead">' + p.details + '</p>' +
+      '  <h3 style="font-size:24px;margin:32px 0 0">What\'s included</h3>' +
+      '  <ul class="checklist">' + p.includes.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>' +
+      '  <p><strong>Best for:</strong> <span class="muted">' + p.best + '</span></p>' +
+      '</div>' +
+      '<div class="panel buy">' +
+      '  <div class="muted">' + p.unit + ' · or ' + money(planPrice(p, 'annual')) + '/year</div>' +
+      '  <div class="price">' + money(p.price) + '</div>' +
+      '  <a class="btn block" id="subscribe-now" href="../subscribe/?plan=' + p.id + '">Subscribe</a>' +
+      '  <a class="btn ghost block" style="margin-top:10px" id="ask-question" href="../#consult">Ask a question first</a>' +
+      '  <button type="button" class="text-btn" id="save-program">Save for later</button>' +
+      '</div>';
+
+    track('ViewContent', pixelContents(p));
+
+    document.getElementById('save-program').addEventListener('click', function () {
+      track('AddToWishlist', pixelContents(p));
+      toast('Saved ' + p.name);
+    });
+  }
+</script>
+</body>
+</html>
