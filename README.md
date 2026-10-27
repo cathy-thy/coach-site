@@ -33,7 +33,7 @@ Plans (monthly; annual = 10x): `app` $39, `online` $149, `small-group` $199, `on
 
 Remembered in localStorage, so set once per browser.
 
-- `?pixel=CODE` — use another pixel (default `DBBIL6BC77U1A7OSMPSG`)
+- `?pixel=CODE` — use another pixel (default `DBGIFABC77U8K2BMIOMG`)
 - `?debug=1` — floating event log (`?debug=0` hides it)
 - `?track=off` — stop code-fired events, leaving only `ttq.page()` (for Event Builder rule testing). `?track=on` restores.
 
