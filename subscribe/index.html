@@ -30,10 +30,10 @@
   <form class="two-col" id="subscribe-form" style="margin-top:24px">
     <div>
       <div class="panel"><h3>Your details</h3><div class="fields">
-        <div><label for="s-first">First name</label><input id="s-first" required autocomplete="given-name"></div>
-        <div><label for="s-last">Last name</label><input id="s-last" required autocomplete="family-name"></div>
-        <div><label for="s-email">Email</label><input id="s-email" type="email" required autocomplete="email"></div>
-        <div><label for="s-phone">Phone</label><input id="s-phone" type="tel" required autocomplete="tel"></div>
+        <div><label for="s-first">First name</label><input id="s-first" autocomplete="given-name"></div>
+        <div><label for="s-last">Last name</label><input id="s-last" autocomplete="family-name"></div>
+        <div><label for="s-email">Email</label><input id="s-email" type="email" autocomplete="email"></div>
+        <div><label for="s-phone">Phone</label><input id="s-phone" type="tel" autocomplete="tel"></div>
         <div class="full"><label for="s-goal">Main goal</label>
           <select id="s-goal"><option>Build strength</option><option>Lose fat</option><option>Move without pain</option><option>Sport performance</option></select>
         </div>
@@ -109,11 +109,10 @@
   document.getElementById('subscribe-form').addEventListener('submit', async function (e) {
     e.preventDefault();
     var err = document.getElementById('sub-error');
-    var pay = document.querySelector('input[name="pay"]:checked');
-    if (!selected || !pay) {
-      err.textContent = !selected ? 'Choose a plan above.' : 'Choose a payment method.';
+    if (!selected) {
+      err.textContent = 'Choose a plan above.';
       err.hidden = false;
-      if (!selected) document.getElementById('plans').scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('plans').scrollIntoView({ behavior: 'smooth' });
       return;
     }
     var email = document.getElementById('s-email').value;

@@ -29,14 +29,17 @@
   } else {
     el.innerHTML =
       '<div class="check">✓</div>' +
-      '<h1>Welcome aboard, <span id="b-name"></span>!</h1>' +
+      '<h1>Welcome aboard<span id="b-name"></span>!</h1>' +
       '<p class="muted">Membership <strong id="b-number"></strong> · <span id="b-program"></span> · ' + money(sub.total) + '/' + (sub.billing === 'annual' ? 'year' : 'month') + '</p>' +
-      '<p>A receipt and your onboarding questionnaire are on their way to <span id="b-email"></span>. I\'ll reach out within one business day to schedule your assessment.</p>' +
+      '<p><span id="b-email-line" hidden>A receipt and your onboarding questionnaire are on their way to <span id="b-email"></span>. </span>I\'ll reach out within one business day to schedule your assessment.</p>' +
       '<p><a class="btn ghost" href="../">Back to home</a></p>';
-    document.getElementById('b-name').textContent = sub.firstName;
+    if (sub.firstName) document.getElementById('b-name').textContent = ', ' + sub.firstName;
     document.getElementById('b-number').textContent = sub.number;
     document.getElementById('b-program').textContent = sub.plan;
-    document.getElementById('b-email').textContent = sub.email;
+    if (sub.email) {
+      document.getElementById('b-email').textContent = sub.email;
+      document.getElementById('b-email-line').hidden = false;
+    }
   }
 </script>
 </body>
